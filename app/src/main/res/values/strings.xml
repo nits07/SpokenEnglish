@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">SpokenEnglish</string>
     <string name="action_settings">Settings</string>
+    <string name="typeHint">Type to Listen</string>
+    <string name="readTextButton">Read Text</string>
+    <string name="resultHint">Your speech will appear here</string>
+    <string name="speakButton">Tap to Speak</string>
+    <string name="speech_prompt">Say something&#8230;</string>
+    <string name="speech_not_supported">Sorry! Your device doesn\'t support speech input</string>
 </resources>

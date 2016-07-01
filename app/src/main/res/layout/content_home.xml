@@ -13,8 +13,43 @@
     tools:showIn="@layout/activity_home"
     tools:context="com.spokenenglish.Home">
 
-    <TextView
-        android:text="Hello World!"
+    <Button
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="@string/readTextButton"
+        android:id="@+id/readButton"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="121dp" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/readText"
+        android:layout_alignBottom="@+id/readButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="57dp"
+        android:inputType="text"
+        android:hint="@string/typeHint" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/speakButton"
+        android:id="@+id/speakButton"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="130dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/writeText"
+        android:layout_marginBottom="74dp"
+        android:hint="@string/resultHint"
+        android:layout_above="@+id/speakButton"
+        android:layout_centerHorizontal="true"
+        android:elegantTextHeight="false"
+        android:inputType="textMultiLine" />
+
 </RelativeLayout>
