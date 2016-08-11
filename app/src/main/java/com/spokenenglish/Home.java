@@ -28,6 +28,7 @@ public class Home extends Activity {
     //Speech to Text
     private TextView writeText;
     private Button speakButton;
+    public Intent intent;
     private final int REQ_CODE_SPEECH_INPUT = 100;
 
     @Override
@@ -43,7 +44,7 @@ public class Home extends Activity {
             @Override
             public void onInit(int status){
                 if(status!=TextToSpeech.ERROR)
-                    textToSpeech.setLanguage(new Locale("en","IN"));
+                    textToSpeech.setLanguage(new Locale("en","US"));
             }
         });
 
@@ -71,17 +72,44 @@ public class Home extends Activity {
     }
 
     //Text to Speech
+    @Override
     public void onPause(){
         if(textToSpeech!=null){
             textToSpeech.stop();
             textToSpeech.shutdown();
         }
+
         super.onPause();
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+        //Text to Speech
+        readText=(EditText) findViewById(R.id.readText);
+        readButton=(Button) findViewById(R.id.readButton);
+
+        textToSpeech=new TextToSpeech(getApplicationContext(),new TextToSpeech.OnInitListener(){
+            @Override
+            public void onInit(int status){
+                if(status!=TextToSpeech.ERROR)
+                    textToSpeech.setLanguage(new Locale("en","US"));
+            }
+        });
+
+        readButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                String toSpeak=readText.getText().toString();
+                Toast.makeText(getApplicationContext(),toSpeak,Toast.LENGTH_SHORT).show();
+                textToSpeech.speak(toSpeak,TextToSpeech.QUEUE_FLUSH,null);
+            }
+        });
+
+    }
     //////////////Speech to Text/////////////////
     private void promptSpeechInput(){
-        Intent intent=new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent=new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
                 RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,Locale.getDefault());
@@ -94,6 +122,9 @@ public class Home extends Activity {
             Toast.makeText(getApplicationContext(),
                     getString(R.string.speech_not_supported),
                     Toast.LENGTH_SHORT).show();
+        }
+        finally{
+
         }
     }
 
@@ -115,7 +146,18 @@ public class Home extends Activity {
     }
 
     //Menu and other
-
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        if(textToSpeech!=null){
+            textToSpeech.stop();
+            textToSpeech.shutdown();
+        }
+        if(intent!=null)
+        {
+            this.finish();
+        }
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
