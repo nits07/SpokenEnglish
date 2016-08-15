@@ -20,16 +20,15 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 public class Home extends Activity {
+    private final int REQ_CODE_SPEECH_INPUT = 100;
+    public Intent intent;
     //Text to Speech
     TextToSpeech textToSpeech;
     EditText readText;
     Button readButton;
-
     //Speech to Text
     private TextView writeText;
     private Button speakButton;
-    public Intent intent;
-    private final int REQ_CODE_SPEECH_INPUT = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,35 +39,39 @@ public class Home extends Activity {
         readText=(EditText) findViewById(R.id.readText);
         readButton=(Button) findViewById(R.id.readButton);
 
+        /*
         textToSpeech=new TextToSpeech(getApplicationContext(),new TextToSpeech.OnInitListener(){
             @Override
             public void onInit(int status){
                 if(status!=TextToSpeech.ERROR)
                     textToSpeech.setLanguage(new Locale("en","US"));
             }
-        });
+        });*/
 
         readButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
+                /*
                 String toSpeak=readText.getText().toString();
                 Toast.makeText(getApplicationContext(),toSpeak,Toast.LENGTH_SHORT).show();
                 textToSpeech.speak(toSpeak,TextToSpeech.QUEUE_FLUSH,null);
+                */
+                textToSpeechService();
             }
         });
 
 
-        //Speech to Text
-        writeText=(TextView) findViewById(R.id.writeText);
-        speakButton=(Button) findViewById(R.id.speakButton);
-
-        speakButton.setOnClickListener(new View.OnClickListener(){
-
-            @Override
-            public void onClick(View view){
-                promptSpeechInput();
-            }
-        });
+        //Speech to Text ///////check if this block is required in onResume() too
+        writeText = (TextView) findViewById(R.id.writeText);                     //
+        speakButton = (Button) findViewById(R.id.speakButton);                   //
+        //
+        speakButton.setOnClickListener(new View.OnClickListener() {             //
+            @Override                                                          //
+            public void onClick(View view) {                                    //
+                promptSpeechInput();                                           //
+            }                                                                  //
+        });                                                                    //
+        /////////////////////////////////////////////////////////////////////////
     }
 
     //Text to Speech
@@ -78,7 +81,6 @@ public class Home extends Activity {
             textToSpeech.stop();
             textToSpeech.shutdown();
         }
-
         super.onPause();
     }
 
@@ -89,24 +91,49 @@ public class Home extends Activity {
         readText=(EditText) findViewById(R.id.readText);
         readButton=(Button) findViewById(R.id.readButton);
 
+        /*
         textToSpeech=new TextToSpeech(getApplicationContext(),new TextToSpeech.OnInitListener(){
             @Override
             public void onInit(int status){
                 if(status!=TextToSpeech.ERROR)
                     textToSpeech.setLanguage(new Locale("en","US"));
             }
-        });
+        });*/
 
         readButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
+                /*
                 String toSpeak=readText.getText().toString();
                 Toast.makeText(getApplicationContext(),toSpeak,Toast.LENGTH_SHORT).show();
                 textToSpeech.speak(toSpeak,TextToSpeech.QUEUE_FLUSH,null);
+                */
+                textToSpeechService();
             }
         });
 
     }
+
+    //////////////Text to Speech method/////////////////
+    private void textToSpeechService() {
+        textToSpeech = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status != TextToSpeech.ERROR)
+                    textToSpeech.setLanguage(new Locale("en", "US"));
+            }
+        });
+
+        readButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String toSpeak = readText.getText().toString();
+                Toast.makeText(getApplicationContext(), toSpeak, Toast.LENGTH_SHORT).show();
+                textToSpeech.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, null);
+            }
+        });
+    }
+
     //////////////Speech to Text/////////////////
     private void promptSpeechInput(){
         intent=new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
