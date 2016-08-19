@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 public class Home extends Activity {
+    private static final int TTS_CHECK_CODE = 101;
     private final int REQ_CODE_SPEECH_INPUT = 100;
     public Intent intent;
     //Text to Speech
@@ -72,6 +73,11 @@ public class Home extends Activity {
             }                                                                  //
         });                                                                    //
         /////////////////////////////////////////////////////////////////////////
+
+        ///////Intent to check if TTS Data is available else direct to download it//////////
+        Intent checkIntent = new Intent();
+        checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
+        startActivityForResult(checkIntent, TTS_CHECK_CODE);
     }
 
     //Text to Speech
@@ -169,7 +175,18 @@ public class Home extends Activity {
                 }
                 break;
             }
+            case TTS_CHECK_CODE: {///////Checking TTS Data/////////
+                if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
+                    //success, create the TTS instance
+                } else {
+                    //missing data, install it
+                    Intent installIntent = new Intent();
+                    installIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
+                    startActivity(installIntent);
+                }
+            }
         }
+
     }
 
     //Menu and other
