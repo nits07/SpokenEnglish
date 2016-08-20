@@ -1,9 +1,14 @@
 package com.spokenenglish;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
 import android.view.View;
@@ -31,6 +36,9 @@ public class Home extends Activity {
     private TextView writeText;
     private Button speakButton;
 
+    private SpeechService speechService;
+    private Intent speechServiceIntent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,39 +48,24 @@ public class Home extends Activity {
         readText=(EditText) findViewById(R.id.readText);
         readButton=(Button) findViewById(R.id.readButton);
 
-        /*
-        textToSpeech=new TextToSpeech(getApplicationContext(),new TextToSpeech.OnInitListener(){
-            @Override
-            public void onInit(int status){
-                if(status!=TextToSpeech.ERROR)
-                    textToSpeech.setLanguage(new Locale("en","US"));
-            }
-        });*/
 
         readButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                /*
-                String toSpeak=readText.getText().toString();
-                Toast.makeText(getApplicationContext(),toSpeak,Toast.LENGTH_SHORT).show();
-                textToSpeech.speak(toSpeak,TextToSpeech.QUEUE_FLUSH,null);
-                */
-                textToSpeechService();
+                speak();
             }
         });
 
 
-        //Speech to Text ///////check if this block is required in onResume() too
-        writeText = (TextView) findViewById(R.id.writeText);                     //
-        speakButton = (Button) findViewById(R.id.speakButton);                   //
-        //
+        ///Speech to Text///
+        writeText = (TextView) findViewById(R.id.writeText);
+        speakButton = (Button) findViewById(R.id.speakButton);
         speakButton.setOnClickListener(new View.OnClickListener() {             //
             @Override                                                          //
-            public void onClick(View view) {                                    //
-                promptSpeechInput();                                           //
+            public void onClick(View view) {
+                promptSpeechInput();
             }                                                                  //
-        });                                                                    //
-        /////////////////////////////////////////////////////////////////////////
+        });
 
         ///////Intent to check if TTS Data is available else direct to download it//////////
         Intent checkIntent = new Intent();
@@ -97,24 +90,10 @@ public class Home extends Activity {
         readText=(EditText) findViewById(R.id.readText);
         readButton=(Button) findViewById(R.id.readButton);
 
-        /*
-        textToSpeech=new TextToSpeech(getApplicationContext(),new TextToSpeech.OnInitListener(){
-            @Override
-            public void onInit(int status){
-                if(status!=TextToSpeech.ERROR)
-                    textToSpeech.setLanguage(new Locale("en","US"));
-            }
-        });*/
-
         readButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                /*
-                String toSpeak=readText.getText().toString();
-                Toast.makeText(getApplicationContext(),toSpeak,Toast.LENGTH_SHORT).show();
-                textToSpeech.speak(toSpeak,TextToSpeech.QUEUE_FLUSH,null);
-                */
-                textToSpeechService();
+                speak();
             }
         });
 
@@ -189,6 +168,7 @@ public class Home extends Activity {
 
     }
 
+
     //Menu and other
     @Override
     public void onDestroy(){
@@ -202,6 +182,14 @@ public class Home extends Activity {
             this.finish();
         }
     }
+
+    public void speak() {
+        Context context = getApplicationContext();
+        speechServiceIntent = new Intent(context, SpeechService.class);
+        speechServiceIntent.putExtra(SpeechService.EXTRA_TO_SPEAK, readText.getText().toString());
+        context.startService(speechServiceIntent);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

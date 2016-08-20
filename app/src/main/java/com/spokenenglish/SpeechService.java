@@ -2,6 +2,7 @@ package com.spokenenglish;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.speech.tts.TextToSpeech;
@@ -12,8 +13,16 @@ import java.util.Locale;
  * Created by nits on 19-08-2016.
  */
 public class SpeechService extends Service implements TextToSpeech.OnInitListener {
-    public static final String EXTRA_TO_SPEAK = "toSpeak";
 
+//    private final IBinder speechServiceBinder = new SpeechServiceBinder();
+
+//    public class SpeechServiceBinder extends Binder{
+//        SpeechService getService(){
+//            return SpeechService.this;
+//        }
+//    }
+
+    public static final String EXTRA_TO_SPEAK = "toSpeak";
     private TextToSpeech tts;
     private String toSpeak;
     private Boolean isInit;
@@ -32,9 +41,8 @@ public class SpeechService extends Service implements TextToSpeech.OnInitListene
 
         toSpeak = intent.getStringExtra(SpeechService.EXTRA_TO_SPEAK);
 
-        if (isInit) {
-            speak();
-        }
+        speak();
+
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
