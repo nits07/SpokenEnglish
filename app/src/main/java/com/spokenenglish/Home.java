@@ -47,15 +47,12 @@ public class Home extends Activity {
         //Text to Speech
         readText=(EditText) findViewById(R.id.readText);
         readButton=(Button) findViewById(R.id.readButton);
-
-
         readButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
                 speak();
             }
         });
-
 
         ///Speech to Text///
         writeText = (TextView) findViewById(R.id.writeText);
@@ -73,9 +70,9 @@ public class Home extends Activity {
         startActivityForResult(checkIntent, TTS_CHECK_CODE);
     }
 
-    //Text to Speech
     @Override
     public void onPause(){
+        //Text to Speech
         if(textToSpeech!=null){
             textToSpeech.stop();
             textToSpeech.shutdown();
@@ -89,32 +86,10 @@ public class Home extends Activity {
         //Text to Speech
         readText=(EditText) findViewById(R.id.readText);
         readButton=(Button) findViewById(R.id.readButton);
-
         readButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
                 speak();
-            }
-        });
-
-    }
-
-    //////////////Text to Speech method/////////////////
-    private void textToSpeechService() {
-        textToSpeech = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if (status != TextToSpeech.ERROR)
-                    textToSpeech.setLanguage(new Locale("en", "US"));
-            }
-        });
-
-        readButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String toSpeak = readText.getText().toString();
-                Toast.makeText(getApplicationContext(), toSpeak, Toast.LENGTH_SHORT).show();
-                textToSpeech.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, null);
             }
         });
     }
@@ -168,6 +143,13 @@ public class Home extends Activity {
 
     }
 
+    //Calling SpeechService
+    public void speak() {
+        Context context = getApplicationContext();
+        speechServiceIntent = new Intent(context, SpeechService.class);
+        speechServiceIntent.putExtra(SpeechService.EXTRA_TO_SPEAK, readText.getText().toString());
+        context.startService(speechServiceIntent);
+    }
 
     //Menu and other
     @Override
@@ -181,13 +163,6 @@ public class Home extends Activity {
         {
             this.finish();
         }
-    }
-
-    public void speak() {
-        Context context = getApplicationContext();
-        speechServiceIntent = new Intent(context, SpeechService.class);
-        speechServiceIntent.putExtra(SpeechService.EXTRA_TO_SPEAK, readText.getText().toString());
-        context.startService(speechServiceIntent);
     }
 
     @Override
