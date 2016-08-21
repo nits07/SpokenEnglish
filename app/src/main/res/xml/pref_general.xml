@@ -1,0 +1,14 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+        android:defaultValue="English (US)"
+        android:entries="@array/speechLocales"
+        android:entryValues="@array/speechLocaleValues"
+        android:key="speechLocale"
+        android:title="@string/locale_setting_title" />
+    <ListPreference
+        android:defaultValue="Normal"
+        android:entries="@array/speechSpeed"
+        android:entryValues="@array/speechSpeedValues"
+        android:key="speechSpeed"
+        android:title="@string/speed_setting_title" />
+</PreferenceScreen>

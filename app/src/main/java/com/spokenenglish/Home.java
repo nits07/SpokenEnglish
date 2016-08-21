@@ -7,10 +7,14 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,8 +28,9 @@ import org.w3c.dom.Text;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class Home extends Activity {
+public class Home extends AppCompatActivity {
     private static final int TTS_CHECK_CODE = 101;
+    private static final int RESULT_SETTINGS = 1;
     private final int REQ_CODE_SPEECH_INPUT = 100;
     public Intent intent;
     //Text to Speech
@@ -43,6 +48,8 @@ public class Home extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         //Text to Speech
         readText=(EditText) findViewById(R.id.readText);
@@ -70,15 +77,11 @@ public class Home extends Activity {
         startActivityForResult(checkIntent, TTS_CHECK_CODE);
     }
 
+    /* ////Nothing to override
     @Override
     public void onPause(){
-        //Text to Speech
-        if(textToSpeech!=null){
-            textToSpeech.stop();
-            textToSpeech.shutdown();
-        }
         super.onPause();
-    }
+    }*/
 
     @Override
     public void onResume(){
@@ -139,8 +142,11 @@ public class Home extends Activity {
                     startActivity(installIntent);
                 }
             }
+            case RESULT_SETTINGS: {
+                showUserSettings();
+                break;
+            }
         }
-
     }
 
     //Calling SpeechService
@@ -151,14 +157,14 @@ public class Home extends Activity {
         context.startService(speechServiceIntent);
     }
 
+    private void showUserSettings() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+    }
+
     //Menu and other
     @Override
     public void onDestroy(){
         super.onDestroy();
-        if(textToSpeech!=null){
-            textToSpeech.stop();
-            textToSpeech.shutdown();
-        }
         if(intent!=null)
         {
             this.finish();
@@ -177,13 +183,15 @@ public class Home extends Activity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        //switch (item.getItemId()){
+        //    case R.id.action_settings:{
+        Intent i = new Intent(this, SettingsActivity.class);
+//                Intent i = new Intent(this, UserSettingsActivity.class);
+        startActivityForResult(i, RESULT_SETTINGS);
+        return true;
+        //    }
+        //}
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        //return super.onOptionsItemSelected(item);
     }
 }

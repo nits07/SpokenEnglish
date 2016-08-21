@@ -2,10 +2,12 @@ package com.spokenenglish;
 
 import android.app.Service;
 import android.content.Intent;
-import android.os.Binder;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
+import android.widget.Toast;
 
 import java.util.Locale;
 
@@ -14,14 +16,7 @@ import java.util.Locale;
  */
 public class SpeechService extends Service implements TextToSpeech.OnInitListener {
 
-//    private final IBinder speechServiceBinder = new SpeechServiceBinder();
-
-//    public class SpeechServiceBinder extends Binder{
-//        SpeechService getService(){
-//            return SpeechService.this;
-//        }
-//    }
-
+    public static final String UNSUPPORTED_LANGUAGE_MESSAGE = "TextToSpeech language not supported";
     public static final String EXTRA_TO_SPEAK = "toSpeak";
     private TextToSpeech tts;
     private String toSpeak;
@@ -41,7 +36,10 @@ public class SpeechService extends Service implements TextToSpeech.OnInitListene
 
         toSpeak = intent.getStringExtra(SpeechService.EXTRA_TO_SPEAK);
 
-        speak();
+        if (isInit != null) {
+            if (isInit)
+                speak();
+        }
 
         handler.postDelayed(new Runnable() {
             @Override
@@ -66,10 +64,14 @@ public class SpeechService extends Service implements TextToSpeech.OnInitListene
     @Override
     public void onInit(int status) {
         if (status == TextToSpeech.SUCCESS) {
+//            SharedPreferences pref= PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+//            int result = tts.setLanguage(new Locale(pref.getString("speechLocale",null)));
             int result = tts.setLanguage(Locale.US);
             if (result != TextToSpeech.LANG_MISSING_DATA && result != TextToSpeech.LANG_NOT_SUPPORTED) {
                 speak();
                 isInit = true;
+            } else {
+                Toast.makeText(getApplicationContext(), UNSUPPORTED_LANGUAGE_MESSAGE, Toast.LENGTH_SHORT).show();
             }
         }
     }
