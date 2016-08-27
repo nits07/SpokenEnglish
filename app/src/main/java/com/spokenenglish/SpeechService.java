@@ -64,11 +64,12 @@ public class SpeechService extends Service implements TextToSpeech.OnInitListene
     @Override
     public void onInit(int status) {
         if (status == TextToSpeech.SUCCESS) {
-//            SharedPreferences pref= PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-//            int result = tts.setLanguage(new Locale(pref.getString("speechLocale",null)));
-            int result = tts.setLanguage(Locale.US);
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            int result = tts.setLanguage(new Locale(pref.getString("speechLocale", null)));
+//            int result = tts.setLanguage(Locale.US);
             if (result != TextToSpeech.LANG_MISSING_DATA && result != TextToSpeech.LANG_NOT_SUPPORTED) {
                 speak();
+                Toast.makeText(getApplicationContext(), "Speech locale " + pref.getString("speechLocale", null), Toast.LENGTH_SHORT).show();
                 isInit = true;
             } else {
                 Toast.makeText(getApplicationContext(), UNSUPPORTED_LANGUAGE_MESSAGE, Toast.LENGTH_SHORT).show();
