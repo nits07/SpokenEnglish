@@ -36,6 +36,13 @@ public class SpeechService extends Service implements TextToSpeech.OnInitListene
 
         toSpeak = intent.getStringExtra(SpeechService.EXTRA_TO_SPEAK);
 
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        tts.setSpeechRate(Float.parseFloat(pref.getString("speechSpeed", "1")));
+        Toast.makeText(getApplicationContext(), "Speech speed " + pref.getString("speechSpeed", null), Toast.LENGTH_SHORT).show();
+
+        tts.setLanguage(new Locale(pref.getString("speechLocale", "en_US")));
+        Toast.makeText(getApplicationContext(), "Speech locale " + pref.getString("speechLocale", "en_US"), Toast.LENGTH_SHORT).show();
+
         if (isInit != null) {
             if (isInit)
                 speak();
@@ -65,11 +72,10 @@ public class SpeechService extends Service implements TextToSpeech.OnInitListene
     public void onInit(int status) {
         if (status == TextToSpeech.SUCCESS) {
             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-            int result = tts.setLanguage(new Locale(pref.getString("speechLocale", null)));
+            int result = tts.setLanguage(new Locale(pref.getString("speechLocale", "en_US")));
 //            int result = tts.setLanguage(Locale.US);
             if (result != TextToSpeech.LANG_MISSING_DATA && result != TextToSpeech.LANG_NOT_SUPPORTED) {
                 speak();
-                Toast.makeText(getApplicationContext(), "Speech locale " + pref.getString("speechLocale", null), Toast.LENGTH_SHORT).show();
                 isInit = true;
             } else {
                 Toast.makeText(getApplicationContext(), UNSUPPORTED_LANGUAGE_MESSAGE, Toast.LENGTH_SHORT).show();

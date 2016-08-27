@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Spoken English</string>
+    <string name="app_name">Spoken English Test App</string>
     <string name="action_settings">Settings</string>
     <string name="typeHint">Type to Listen</string>
     <string name="readTextButton">Read Text</string>

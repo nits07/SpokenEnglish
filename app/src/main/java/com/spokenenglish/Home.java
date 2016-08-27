@@ -13,6 +13,8 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -31,6 +33,7 @@ import java.util.Locale;
 public class Home extends AppCompatActivity {
     private static final int TTS_CHECK_CODE = 101;
     private static final int RESULT_SETTINGS = 1;
+    private static final String TTS_MISSING_MESSAGE = "Please install TextToSpeech Service";
     private final int REQ_CODE_SPEECH_INPUT = 100;
     public Intent intent;
     //Text to Speech
@@ -58,6 +61,15 @@ public class Home extends AppCompatActivity {
             @Override
             public void onClick(View view){
                 speak();
+            }
+        });
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "2016 © Purva ♥ nits", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
             }
         });
 
@@ -138,9 +150,11 @@ public class Home extends AppCompatActivity {
                 } else {
                     //missing data, install it
                     Intent installIntent = new Intent();
+                    Toast.makeText(getApplicationContext(), TTS_MISSING_MESSAGE, Toast.LENGTH_SHORT).show();
                     installIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
                     startActivity(installIntent);
                 }
+                break;
             }
             case RESULT_SETTINGS: {
                 showUserSettings();
