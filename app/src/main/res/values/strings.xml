@@ -9,6 +9,7 @@
     <string name="speech_not_supported">Sorry! Your device doesn\'t support speech input</string>
     <string name="locale_setting_title">Speech Locale</string>
     <string name="speed_setting_title">Speech Speed</string>
+    <string name="pause_setting_title">Word Pause Interval</string>
     <string name="settings_title">Settings</string>
     <string name="title_activity_settings">Settings</string>
 

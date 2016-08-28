@@ -1,8 +1,10 @@
 package com.spokenenglish;
 
+import android.annotation.TargetApi;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -19,7 +21,7 @@ public class SpeechService extends Service implements TextToSpeech.OnInitListene
     public static final String UNSUPPORTED_LANGUAGE_MESSAGE = "TextToSpeech language not supported";
     public static final String EXTRA_TO_SPEAK = "toSpeak";
     private TextToSpeech tts;
-    private String toSpeak;
+    private String sayThis;
     private Boolean isInit;
     private Handler handler;
 
@@ -34,14 +36,13 @@ public class SpeechService extends Service implements TextToSpeech.OnInitListene
     public int onStartCommand(Intent intent, int flags, int startId) {
         handler.removeCallbacksAndMessages(null);
 
-        toSpeak = intent.getStringExtra(SpeechService.EXTRA_TO_SPEAK);
+        sayThis = intent.getStringExtra(SpeechService.EXTRA_TO_SPEAK);
 
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        tts.setSpeechRate(Float.parseFloat(pref.getString("speechSpeed", "1")));
-        Toast.makeText(getApplicationContext(), "Speech speed " + pref.getString("speechSpeed", null), Toast.LENGTH_SHORT).show();
-
         tts.setLanguage(new Locale(pref.getString("speechLocale", "en_US")));
-        Toast.makeText(getApplicationContext(), "Speech locale " + pref.getString("speechLocale", "en_US"), Toast.LENGTH_SHORT).show();
+        tts.setSpeechRate(Float.parseFloat(pref.getString("speechSpeed", "0.8")));
+        Toast.makeText(getApplicationContext(), "Speech locale " + pref.getString("speechLocale", "en_US") +
+                "\nspeed " + pref.getString("speechSpeed", "0.8"), Toast.LENGTH_SHORT).show();
 
         if (isInit != null) {
             if (isInit)
@@ -73,7 +74,6 @@ public class SpeechService extends Service implements TextToSpeech.OnInitListene
         if (status == TextToSpeech.SUCCESS) {
             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
             int result = tts.setLanguage(new Locale(pref.getString("speechLocale", "en_US")));
-//            int result = tts.setLanguage(Locale.US);
             if (result != TextToSpeech.LANG_MISSING_DATA && result != TextToSpeech.LANG_NOT_SUPPORTED) {
                 speak();
                 isInit = true;
@@ -84,8 +84,23 @@ public class SpeechService extends Service implements TextToSpeech.OnInitListene
     }
 
     private void speak() {
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         if (tts != null) {
-            tts.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, null);
+            if (pref.getString("wordPause", "0").equals("0")) {
+                tts.speak(sayThis, TextToSpeech.QUEUE_FLUSH, null);
+            } else {
+                final Handler h = new Handler();
+                String[] words = sayThis.split(" ");
+                for (final String word : words) {
+                    Runnable t = new Thread() {
+                        @Override
+                        public void run() {
+                            tts.speak(word, TextToSpeech.QUEUE_ADD, null);
+                        }
+                    };
+                    h.postDelayed(t, Integer.parseInt(pref.getString("wordPause", "0")));
+                }
+            }
         }
     }
 
